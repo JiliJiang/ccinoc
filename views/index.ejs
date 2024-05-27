@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Entry</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #000;
+            margin: 0;
+            padding: 0;
+        }
+        .header-container {
+            background-color: #1c1f3b;
+            color: #fff;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between; /* Align header to right */
+            align-items: center;
+        }
+        .search-form {
+            margin-top: 20px;
+            margin-left: 20px;
+        }
+        .search-form input[type="text"] {
+            width: 300px; /* Adjust width of search input */
+        }
+        .search-form button {
+            margin-left: 10px;
+        }
+        .form-container {
+            background-color: #343a40; /* Change to dark grey */
+            padding: 30px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            color: #fff;
+        }
+        .large-textarea {
+            width: 100%; /* Make the textarea wider */
+            height: 400px; /* Adjust height for better multiline input */
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div>
+            <h1>CCI NOC Knowledge Base</h1>
+        </div>
+        <div class="search-form">
+            <form id="searchForm" action="/search" method="get" class="form-inline">
+                <div class="form-group mb-2">
+                    <input id="searchInput" type="text" class="form-control" name="keyword" placeholder="Search...">
+                </div>
+                <button id="searchButton" type="submit" class="btn btn-secondary mb-2 ml-2" disabled>Search</button>
+            </form>
+        </div>
+    </div>
+    <div class="container">
+        <div class="form-container">
+            <h2 class="mb-4">Data Entry</h2>
+            <form action="/submit" method="post">
+                <div id="string-fields">
+                    <% for (let i = 0; i < 3; i++) { %>
+                    <div class="form-group">
+                        <% if (i === 0) { %>
+                        <input type="text" class="form-control" name="stringFields" placeholder="Customer Name" required>
+                        <% } else if (i === 2) { %>
+                        <textarea class="form-control large-textarea" name="stringFields" placeholder="Special Note" required></textarea>
+                        <% } else { %>
+                        <textarea class="form-control large-textarea" name="stringFields" placeholder="Input Info" required></textarea>
+                        <% } %>
+                    </div>
+                    <% } %>
+                </div>
+                <div id="link-fields">
+                    <% for (let i = 0; i < 5; i++) { %>
+                    <div class="form-row">
+                        <div class="col">
+                            <input type="url" class="form-control" name="linkFields" placeholder="Enter URL">
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" name="linkLabels" placeholder="Enter link label">
+                        </div>
+                    </div>
+                    <% } %>
+                </div>
+                <div id="image-fields">
+                    <% for (let i = 0; i < 3; i++) { %>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="imageFields" placeholder="Enter image path">
+                    </div>
+                    <% } %>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to enable/disable search button based on input length
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        
+        searchInput.addEventListener('input', function() {
+            if (searchInput.value.length >= 3) {
+                searchButton.disabled = false;
+            } else {
+                searchButton.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>

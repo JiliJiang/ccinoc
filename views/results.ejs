@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCI NOC KB</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #000;
+            margin: 0;
+            padding: 0;
+        }
+        .header-container {
+            background-color: #1c1f3b;
+            color: #fff;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between; /* Align header to right */
+            align-items: center;
+        }
+        .search-form {
+            margin-top: 20px;
+            margin-left: 20px;
+        }
+        .search-form input[type="text"] {
+            width: 300px; /* Adjust width of search input */
+        }
+        .search-form button {
+            margin-left: 10px;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .search-results {
+            background-color: #1c1f3b;
+            color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .result {
+            margin-bottom: 40px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .result p {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .edit-button {
+            margin-top: 20px;
+        }
+        .go-back-button {
+            margin-bottom: 20px;
+        }
+        .customer-name {
+            font-weight: bold;
+        }
+        .input-info {
+            margin-top: 20px;
+        }
+        .special-notes {
+            margin-top: 20px;
+        }
+        .btn-link {
+            margin-top: 10px;
+            color: #fff;
+            background-color: #007bff;
+            border: 1px solid #007bff;
+        }
+        .btn-link:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .btn-container {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .image-list {
+            margin-top: 20px;
+        }
+        .image-list li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div>
+            <h1>CCI NOC Knowledge Base</h1>
+        </div>
+        <div class="search-form">
+            <form id="searchForm" action="/search" method="get" class="form-inline">
+                <div class="form-group mb-2">
+                    <input id="searchInput" type="text" class="form-control" name="keyword" placeholder="Search...">
+                </div>
+                <button id="searchButton" type="submit" class="btn btn-secondary mb-2 ml-2" disabled>Search</button>
+            </form>
+        </div>
+    </div>
+    <div class="container">
+        <div class="search-results">
+            <!-- Go back button -->
+            <a href="/" class="btn btn-secondary go-back-button">Go Back</a>
+            <% results.forEach(result => { %>
+                <div class="result">
+                    <div class="customer-name">
+                        <p><strong>Customer Name:</strong> <%= result.stringFields[0] %></p>
+                    </div>
+                    <div class="input-info">
+                        <p><strong>Input Info:</strong></p>
+                        <% result.stringFields.slice(1, -1).forEach(info => { %>
+                            <textarea class="form-control" rows="3"><%= info %></textarea>
+                        <% }); %>
+                    </div>
+                    <div class="special-notes">
+                        <p><strong>Special Notes:</strong></p>
+                        <textarea class="form-control" rows="3"><%= result.stringFields.slice(-1)[0] %></textarea>
+                    </div>
+                    <div class="btn-container">
+                        <p><strong>Links:</strong></p>
+                        <% result.linkFields.forEach(link => { %>
+                            <button class="btn btn-link" onclick="window.open('<%= link.url %>', '_blank')"><%= link.label %></button>
+                        <% }); %>
+                    </div>
+                    <div class="image-list">
+                        <p><strong>Images:</strong></p>
+                        <ul>
+                            <% result.imageFields.forEach(image => { %>
+                                <li><img src="/<%= image %>" alt="Image" class="img-fluid"></li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                    <button style="display:none" id="deleteBtn" data-login="<%= login %>" data-id="<%= result._id %>">Delete !</button>
+                    <!-- Edit button -->
+                    <a href="/edit/<%= result._id %>" class="btn btn-primary edit-button">Edit</a>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to enable/disable search button based on input length
+
+const login = localStorage.getItem('login') =="true"? true : false;
+
+if (login){ document.getElementById('deleteBtn').style.display = 'block'; }
+
+document.getElementById('deleteBtn').onclick = async function(){
+
+    const id = document.getElementById('deleteBtn').dataset.id;
+    console.log(id)
+    const response = await fetch(`/edit/${id}`, {
+    method: 'DELETE',
+    });
+
+    if (response.ok) {
+    alert('Records deleted successfully')
+    document.location.replace('/');
+    } else {
+    alert('Failed to delete.');
+  }
+};
+
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        
+        searchInput.addEventListener('input', function() {
+            if (searchInput.value.length >= 3) {
+                searchButton.disabled = false;
+            } else {
+                searchButton.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>
